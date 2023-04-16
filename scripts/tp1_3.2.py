@@ -121,3 +121,19 @@ for _ in range(int(items)):
                 cat = category(cat_parts[1][:-1], cat_parts[0], parent_id)
                 parent_id = cat_parts[1][:-1]
                 cp = catprod(prod.asin, cat.id) #Tupla CatProd (prod_asin, cat_id)!
+        
+        #Lendo reviews do produto
+        line = f.readline() 
+        rev = line.strip("reviews: total: ")
+        rev_linha = rev.split()
+        n_rev = (int) (rev_linha[2])
+
+        for r in range(n_rev):
+            line = f.readline() 
+            rev_content = line.split()
+            review_date = rev_content[0]
+            customer_id = rev_content[2]
+            rating = rev_content[4]
+            votes = rev_content[6]
+            helpful = rev_content[8]
+            revi = review(asin, customer_id, review_date, rating, votes, helpful)

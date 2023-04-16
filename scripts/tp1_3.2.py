@@ -86,9 +86,11 @@ class catprod:
         print(f"cat_id = {self.cat_id}")
 
 f = open("amazon-meta.txt", "+r")
-f.readline() #skip comment
+f.readline() #Desconsidera "comment"
 items = f.readline().split()[2]
-f.readline() #skip blank line
+f.readline() #Pula linha vazia"
+
+#Lendo os produtos individualmente
 for _ in range(int(items)):
     id = f.readline().split()[1]
     asin = f.readline().split()[1]
@@ -96,14 +98,26 @@ for _ in range(int(items)):
     if(line[0] == 'discontinued'):
         prod = product(id, asin, 'NULL', 'NULL', 'NULL')
     else:
-        #
+        #Lendo características do produto
         title = ' '.join(line[1:]).replace("'","''")
         group = f.readline().split()[1]
         salesrank = f.readline().split()[1]
         prod = product(id, asin, title, group, salesrank)
 
-        #reading similar
+        #Lendo similares ao produto
         line = f.readline().split()
         similar_list = line[2:]
         for i in range(int(line[1])):
             sim = similar(prod.asin, similar_list[i])
+
+        #Lendo categorias (mãe e filhas) do produto 
+        line = f.readline().split()[1]
+        cat_line_qtd = int(line)
+        for _ in range(cat_line_qtd):
+            line = f.readline().replace("\n","").split('|')
+            parent_id = 'NULL'
+            for cat_str in line[1:]:
+                cat_parts = cat_str.split('[')
+                cat = category(cat_parts[1][:-1], cat_parts[0], parent_id)
+                parent_id = cat_parts[1][:-1]
+                cp = catprod(prod.asin, cat.id) #Tupla CatProd (prod_asin, cat_id)!

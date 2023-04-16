@@ -14,7 +14,64 @@ cur = conn.cursor()
 conn.autocommit = True
 
 # Cria novo banco de dados
-cur.execute("CREATE DATABASE tp1db;")
+cur.execute("CREATE DATABASE IF NOT EXISTS tp1db;")
+create_query = [
+    '''
+    CREATE TABLE IF NOT EXISTS product(
+    product_id INT UNIQUE NOT NULL,
+    asin VARCHAR(20),
+    title VARCHAR(500),
+    product_group VARCHAR(20),
+    salesrank INT,
+    PRIMARY KEY(asin)
+    );
+    ''',
+    '''
+    CREATE TABLE IF NOT EXISTS similar_prod(
+    asin_product VARCHAR(20),
+    asin_similar VARCHAR(20),
+    PRIMARY KEY (asin_product, asin_similar),
+    FOREIGN KEY (asin_product)
+    REFERENCES product (asin)
+    );
+    ''',
+    '''
+    CREATE TABLE IF NOT EXISTS category(
+    cat_id INT,
+    name VARCHAR(200),
+    parent_id INT,
+    PRIMARY KEY (cat_id),
+    FOREIGN KEY (parent_id)
+    REFERENCES category (cat_id)
+    );
+
+    ''',
+    '''
+    CREATE TABLE IF NOT EXISTS catprod(
+    asin_prod VARCHAR(20),
+    cat_id INT,
+    PRIMARY KEY (asin_prod, cat_id),
+    FOREIGN KEY (asin_prod)
+    REFERENCES product(asin),
+    FOREIGN KEY (cat_id)
+    REFERENCES category (cat_id)
+    );
+    ''',
+    '''
+    CREATE TABLE IF NOT EXISTS reviews(
+    review_id SERIAL,
+    asin_product VARCHAR(20) NOT NULL,
+    customer_id VARCHAR(20) NOT NULL,
+    review_date DATE,
+    rating INT,
+    votes INT,
+    helpful INT,
+    PRIMARY KEY (review_id),
+    FOREIGN KEY (asin_product)
+    REFERENCES product (asin)
+    );
+    '''
+]
 
 # Finaliza conexão e fecha cursor
 cur.close()

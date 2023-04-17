@@ -11,12 +11,10 @@ conn = psycopg2.connect(
 
 # Objeto de Cursor
 cur = conn.cursor()
-conn.autocommit = True
+# conn.autocommit = True
 
 # Cria novo banco de dados
-#cur.execute("CREATE DATABASE IF NOT EXISTS tp1db;")
-
-# Cria esquema das tabelas (Product, similarprod, category, catprod, review)
+# cur.execute("CREATE DATABASE tp1db;")
 create_query = [
     '''
     CREATE TABLE IF NOT EXISTS product(
@@ -79,14 +77,14 @@ for query in create_query:
 
 conn.commit()
 
-# Finaliza conexão e fecha cursor
-cur.close()
-conn.close()
-
 class product:
     def __init__(self, id, asin, title, group, salesrank):
+        if(title != 'NULL'):
+            title = "'" + title + "'"
+            group = "'" + group + "'"
+
         self.id = id
-        self.asin = asin
+        self.asin = "'" + asin + "'"
         self.title = title
         self.group = group
         self.salesrank = salesrank
@@ -104,8 +102,8 @@ class product:
 class similar:
     def __init__(self, asin_product, asin_similar):
         self.asin_product = asin_product
-        self.asin_similar = asin_similar
-
+        self.asin_similar = "'" + asin_similar + "'"
+    
     def insert_similar(self, cur):
         values = f"{self.asin_product},{self.asin_similar}"
         query = f"INSERT INTO similarprod VALUES ({values});"
@@ -120,7 +118,7 @@ class similar:
 class category:
     def __init__(self, id, name, parent_id):
         self.id = id
-        self.name = name
+        self.name = "'" + (name.replace("'", "''")) + "'"
         self.parent_id = parent_id
 
     def insert_category(self, cur):
@@ -133,15 +131,16 @@ class category:
             print(err)
             exit(-1)
 
+
 class review:
     def __init__(self, asin_product, customer_id, review_date, rating, votes, helpful):
         self.asin_product = asin_product
-        self.customer_id = customer_id
-        self.review_date = review_date
+        self.customer_id = "'" + customer_id + "'"
+        self.review_date = "'" + review_date + "'"
         self.rating = rating
         self.votes = votes
         self.helpful = helpful
-    
+
     def insert_review(self, cur):
         columns = "asin_product, customer_id, review_date, rating, votes, helpful"
         values = f"{self.asin_product},{self.customer_id},{self.review_date}, {self.rating}, {self.votes}, {self.helpful}"
@@ -153,25 +152,25 @@ class review:
             print(err)
             exit(-1)
 
-
 class catprod:
     def __init__(self, asin_product, cat_id):
         self.asin_product = asin_product
         self.cat_id = cat_id
     
-    def print_catprod(self):
-        print("=====================================================")
-        print(f"asin_product: {self.asin_product}")
-        print(f"cat_id = {self.cat_id}")
+    def insert_catprod(self, cur):
+        values = f"{self.asin_product},{self.cat_id}"
+        query = f"INSERT INTO catprod VALUES ({values}) ON CONFLICT (asin_prod, cat_id) DO NOTHING;"
+        try:
+            cur.execute(query)
+            conn.commit()
+        except Exception as err:
+            print(err)
+            exit(-1)
 
-
-# Lendo Arquivo Amazon Meta
 f = open("amazon-meta.txt", "+r")
-f.readline() #Desconsidera "comment"
+f.readline()  # Pula comentário
 items = f.readline().split()[2]
-f.readline() #Pula linha vazia"
-
-#Lendo os produtos individualmente
+f.readline()  # Ignora linha vazia
 for _ in range(int(items)):
     id = f.readline().split()[1]
     asin = f.readline().split()[1]
@@ -186,14 +185,14 @@ for _ in range(int(items)):
         prod = product(id, asin, title, group, salesrank)
         prod.insert_product(cur)
 
-        # Lendo Produtos similares
+        # Lendo similares ao produto
         line = f.readline().split()
         similar_list = line[2:]
         for i in range(int(line[1])):
             sim = similar(prod.asin, similar_list[i])
             sim.insert_similar(cur)
 
-        #Lendo categorias (mãe e filhas) do produto 
+        # Lendo Categorias do produto
         line = f.readline().split()[1]
         cat_line_qtd = int(line)
         for _ in range(cat_line_qtd):
@@ -210,8 +209,8 @@ for _ in range(int(items)):
                 # catprod tuple
                 cp = catprod(prod.asin, cat.id)
                 cp.insert_catprod(cur)
-        
-        #Lendo reviews do produto
+
+        # Lendo reviews dos produtos
         line = f.readline()
         rev = line.strip("reviews: total: ")
         rev_linha = rev.split()
@@ -228,7 +227,6 @@ for _ in range(int(items)):
             revi = review(prod.asin, customer_id, review_date,
                           rating, votes, helpful)
             revi.insert_review(cur)
-
 
     f.readline()
 

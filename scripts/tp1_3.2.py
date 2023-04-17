@@ -21,13 +21,13 @@ create_query = [
     product_id INT UNIQUE NOT NULL,
     asin VARCHAR(20),
     title VARCHAR(500),
-    product_group VARCHAR(20),
+    product_group VARCHAR(300),
     salesrank INT,
     PRIMARY KEY(asin)
     );
     ''',
     '''
-    CREATE TABLE IF NOT EXISTS similar_prod(
+    CREATE TABLE IF NOT EXISTS similarprod(
     asin_product VARCHAR(20),
     asin_similar VARCHAR(20),
     PRIMARY KEY (asin_product, asin_similar),
@@ -58,7 +58,7 @@ create_query = [
     );
     ''',
     '''
-    CREATE TABLE IF NOT EXISTS reviews(
+    CREATE TABLE IF NOT EXISTS review(
     review_id SERIAL,
     asin_product VARCHAR(20) NOT NULL,
     customer_id VARCHAR(20) NOT NULL,
@@ -70,8 +70,12 @@ create_query = [
     FOREIGN KEY (asin_product)
     REFERENCES product (asin)
     );
-    '''
-]
+    ''']
+
+for query in create_query:
+    cur.execute(query)
+
+conn.commit()
 
 # Finaliza conexão e fecha cursor
 cur.close()
@@ -85,23 +89,31 @@ class product:
         self.group = group
         self.salesrank = salesrank
 
-    def print_product(self):
-        print("=====================================================")
-        print(f"id: {self.id}")
-        print(f"asin: {self.asin}")
-        print(f"title: {self.title}")
-        print(f"group: {self.group}")
-        print(f"salesrank: {self.salesrank}")
+    def insert_product(self, cur):
+        values = f"{self.id},{self.asin}, {self.title}, {self.group},{self.salesrank}"
+        query = f"INSERT INTO product VALUES ({values});"
+
+        try:
+            cur.execute(query)
+            conn.commit()
+        except Exception as err:
+            print(err)
 
 class similar:
     def __init__(self, asin_product, asin_similar):
         self.asin_product = asin_product
         self.asin_similar = asin_similar
 
-    def print_similar(self):
-        print("=====================================================")
-        print(f"asin_product: {self.asin_product}")
-        print(f"asin_similar: {self.asin_similar}")
+    def insert_similar(self, cur):
+        values = f"{self.asin_product},{self.asin_similar}"
+        query = f"INSERT INTO similarprod VALUES ({values});"
+        try:
+            cur.execute(query)
+            conn.commit()
+        except Exception as err:
+            print(err)
+            exit(-1)
+
 
 class category:
     def __init__(self, id, name, parent_id):
@@ -109,11 +121,15 @@ class category:
         self.name = name
         self.parent_id = parent_id
 
-    def print_category(self):
-        print("=====================================================")
-        print(f"id: {self.id}")
-        print(f"name: {self.name}")
-        print(f"parent_id: {self.parent_id}")
+    def insert_category(self, cur):
+        values = f"{self.id},{self.name},{self.parent_id}"
+        query = f"INSERT INTO category VALUES ({values}) ON CONFLICT (cat_id) DO NOTHING;"
+        try:
+            cur.execute(query)
+            conn.commit()
+        except Exception as err:
+            print(err)
+            exit(-1)
 
 class review:
     def __init__(self, asin_product, customer_id, review_date, rating, votes, helpful):
@@ -124,13 +140,17 @@ class review:
         self.votes = votes
         self.helpful = helpful
     
-    def print_reviews(self):
-        print("=====================================================")
-        print(f"asin_product: {self.asin_product}")
-        print(f"customer_id: {self.customer_id}")
-        print(f"review_date: {self.rating}")
-        print(f"votes: {self.votes}")
-        print(f"helpful = {self.helpful}")
+    def insert_review(self, cur):
+        columns = "asin_product, customer_id, review_date, rating, votes, helpful"
+        values = f"{self.asin_product},{self.customer_id},{self.review_date}, {self.rating}, {self.votes}, {self.helpful}"
+        query = f"INSERT INTO review ({columns}) VALUES ({values});"
+        try:
+            cur.execute(query)
+            conn.commit()
+        except Exception as err:
+            print(err)
+            exit(-1)
+
 
 class catprod:
     def __init__(self, asin_product, cat_id):
@@ -152,45 +172,62 @@ for _ in range(int(items)):
     id = f.readline().split()[1]
     asin = f.readline().split()[1]
     line = f.readline().split()
-    if(line[0] == 'discontinued'):
+    if (line[0] == 'discontinued'):
         prod = product(id, asin, 'NULL', 'NULL', 'NULL')
+        prod.insert_product(cur)
     else:
-        #Lendo características do produto
-        title = ' '.join(line[1:]).replace("'","''")
+        title = ' '.join(line[1:]).replace("'", "''")
         group = f.readline().split()[1]
         salesrank = f.readline().split()[1]
         prod = product(id, asin, title, group, salesrank)
+        prod.insert_product(cur)
 
-        #Lendo similares ao produto
+        # Lendo Produtos similares
         line = f.readline().split()
         similar_list = line[2:]
         for i in range(int(line[1])):
             sim = similar(prod.asin, similar_list[i])
+            sim.insert_similar(cur)
 
         #Lendo categorias (mãe e filhas) do produto 
         line = f.readline().split()[1]
         cat_line_qtd = int(line)
         for _ in range(cat_line_qtd):
-            line = f.readline().replace("\n","").split('|')
+            line = f.readline().replace("\n", "").split('|')
             parent_id = 'NULL'
             for cat_str in line[1:]:
                 cat_parts = cat_str.split('[')
-                cat = category(cat_parts[1][:-1], cat_parts[0], parent_id)
+                if(len(cat_parts) > 2):
+                    for i in range(1,len(cat_parts)-1):
+                        cat_parts[i] = '[' + cat_parts[i]
+                cat = category(cat_parts[-1][:-1], ''.join(cat_parts[0:-1]), parent_id)
+                cat.insert_category(cur)
                 parent_id = cat_parts[1][:-1]
-                cp = catprod(prod.asin, cat.id) #Tupla CatProd (prod_asin, cat_id)!
+                # catprod tuple
+                cp = catprod(prod.asin, cat.id)
+                cp.insert_catprod(cur)
         
         #Lendo reviews do produto
-        line = f.readline() 
+        line = f.readline()
         rev = line.strip("reviews: total: ")
         rev_linha = rev.split()
-        n_rev = (int) (rev_linha[2])
+        n_rev = (int)(rev_linha[2])
 
         for r in range(n_rev):
-            line = f.readline() 
+            line = f.readline()
             rev_content = line.split()
             review_date = rev_content[0]
             customer_id = rev_content[2]
             rating = rev_content[4]
             votes = rev_content[6]
             helpful = rev_content[8]
-            revi = review(asin, customer_id, review_date, rating, votes, helpful)
+            revi = review(prod.asin, customer_id, review_date,
+                          rating, votes, helpful)
+            revi.insert_review(cur)
+
+
+    f.readline()
+
+# Finaliza conexão e fecha cursor
+cur.close()
+conn.close()

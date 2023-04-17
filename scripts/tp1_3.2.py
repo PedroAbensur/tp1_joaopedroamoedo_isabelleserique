@@ -14,7 +14,9 @@ cur = conn.cursor()
 conn.autocommit = True
 
 # Cria novo banco de dados
-cur.execute("CREATE DATABASE IF NOT EXISTS tp1db;")
+#cur.execute("CREATE DATABASE IF NOT EXISTS tp1db;")
+
+# Cria esquema das tabelas (Product, similarprod, category, catprod, review)
 create_query = [
     '''
     CREATE TABLE IF NOT EXISTS product(
@@ -162,6 +164,8 @@ class catprod:
         print(f"asin_product: {self.asin_product}")
         print(f"cat_id = {self.cat_id}")
 
+
+# Lendo Arquivo Amazon Meta
 f = open("amazon-meta.txt", "+r")
 f.readline() #Desconsidera "comment"
 items = f.readline().split()[2]

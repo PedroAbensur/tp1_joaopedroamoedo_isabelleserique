@@ -72,7 +72,7 @@ while (True):
         input("Digite qualquer coisa para continuar\n")
         os.system('cls' if os.name == 'nt' else 'clear')
 
-    # FIXAR URGENTE (PARCIAL)
+
     if(cons == '2'):
         asin = input("Insira o ASIN do produto: ")
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -83,7 +83,7 @@ while (True):
         print("")
 
         try:
-            consulta = f"SELECT * FROM (SELECT * FROM product WHERE asin in (SELECT asin_similar FROM similarprod WHERE asin_prod = '{asin}')) "
+            consulta = f"SELECT * FROM (SELECT * FROM product WHERE asin in (SELECT asin_similar FROM similarprod WHERE asin_product = '{asin}')) "
             consulta += f"AS prods WHERE salesrank > (SELECT salesrank FROM product WHERE asin = '{asin}')"
 
             cur.execute(consulta)
@@ -102,7 +102,7 @@ while (True):
         input("Digite qualquer coisa para continuar\n")
         os.system('cls' if os.name == 'nt' else 'clear')
 
-    #Fixar urgente (Parcial)
+
     if(cons == '3'):
         asin = input("Insira o ASIN do produto: ")
         os.system('cls' if os.name == 'nt' else 'clear')

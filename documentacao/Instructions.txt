@@ -1,4 +1,4 @@
-1) Rodar sudo docker-compose up -d 
+1) Rodar sudo docker-compose up -d e source .tp1/bin/activate para entrar no ambiente virtual.
 2) Rodar primeiro o script tp1_3.2.py, para ler os dados do arquivo amazon-meta e popular o banco de dados.
 2.1) Nota: Demoramos cerca de 6 horas para popular tudo. O codigo foi otimizado o máximo possível. 
 Caso seja necessário, podemos providenciar prints e vídeos do DB no postgresql, e as consultas.

@@ -151,7 +151,7 @@ while (True):
             consulta += "UNION (SELECT * from product where product_group='Music' order by salesrank DESC LIMIT 10)"
             consulta += "UNION (SELECT * from product where product_group='Book' order by salesrank DESC LIMIT 10)"
             consulta += "UNION (SELECT * from product where product_group='Software' order by salesrank DESC LIMIT 10)"
-            consulta += "UNION (SELECT * from product where product_group='CE' order by salesrank LIMIT 10) order by product_group, rank DESC"
+            consulta += "UNION (SELECT * from product where product_group='CE' order by salesrank LIMIT 10) order by product_group, salesrank DESC"
 
             cur.execute(consulta)
 
@@ -202,6 +202,7 @@ while (True):
         input("Digite qualquer coisa para continuar\n")
         os.system('cls' if os.name == 'nt' else 'clear')
 
+
     if(cons == '6'):
         print("")
         print("")
@@ -238,62 +239,6 @@ while (True):
         input("Digite qualquer coisa para continuar\n")
         os.system('cls' if os.name == 'nt' else 'clear')
 
-    # Fixar (socorro) (deus me ajude)
-    if(cons == '10'):
-        print("")
-        print("")
-        print("RESULTADO DA CONSULTA:")
-        print("")
-        print("")
-
-        try:
-
-            consulta = "((SELECT r.id_cliente,p.grupo,count(r.id_cliente) "
-            consulta += "AS qtd_reviews FROM reviews as r JOIN produtos as p ON r.asin_prod = p.asin where asin_prod IN "
-            consulta += "(SELECT asin FROM produtos where grupo='Book') GROUP BY r.id_cliente, p.grupo ORDER BY qtd_reviews DESC LIMIT 10) "
-            consulta += "UNION (SELECT r.id_cliente,p.grupo,count(r.id_cliente) "
-            consulta += "AS qtd_reviews FROM reviews as r JOIN produtos as p ON r.asin_prod = p.asin where asin_prod IN "
-            consulta += "(SELECT asin FROM produtos where grupo='Video Games') GROUP BY r.id_cliente, p.grupo ORDER BY qtd_reviews DESC LIMIT 10) "
-            consulta += "UNION (SELECT r.id_cliente,p.grupo,count(r.id_cliente) "
-            consulta += "AS qtd_reviews FROM reviews as r JOIN produtos as p ON r.asin_prod = p.asin where asin_prod IN "
-            consulta += "(SELECT asin FROM produtos where grupo='Sports') GROUP BY r.id_cliente, p.grupo ORDER BY qtd_reviews DESC LIMIT 10) "
-            consulta += "UNION (SELECT r.id_cliente,p.grupo,count(r.id_cliente) "
-            consulta += "AS qtd_reviews FROM reviews as r JOIN produtos as p ON r.asin_prod = p.asin where asin_prod IN "
-            consulta += "(SELECT asin FROM produtos where grupo='DVD') GROUP BY r.id_cliente, p.grupo ORDER BY qtd_reviews DESC LIMIT 10) "
-            consulta += "UNION (SELECT r.id_cliente,p.grupo,count(r.id_cliente) "
-            consulta += "AS qtd_reviews FROM reviews as r JOIN produtos as p ON r.asin_prod = p.asin where asin_prod IN "
-            consulta += "(SELECT asin FROM produtos where grupo='Baby Product') GROUP BY r.id_cliente, p.grupo ORDER BY qtd_reviews DESC LIMIT 10) "
-            consulta += "UNION (SELECT r.id_cliente,p.grupo,count(r.id_cliente) "
-            consulta += "AS qtd_reviews FROM reviews as r JOIN produtos as p ON r.asin_prod = p.asin where asin_prod IN "
-            consulta += "(SELECT asin FROM produtos where grupo='Video') GROUP BY r.id_cliente, p.grupo ORDER BY qtd_reviews DESC LIMIT 10) "
-            consulta += "UNION (SELECT r.id_cliente,p.grupo,count(r.id_cliente) "
-            consulta += "AS qtd_reviews FROM reviews as r JOIN produtos as p ON r.asin_prod = p.asin where asin_prod IN "
-            consulta += "(SELECT asin FROM produtos where grupo='Music') GROUP BY r.id_cliente, p.grupo ORDER BY qtd_reviews DESC LIMIT 10) "
-            consulta += "UNION (SELECT r.id_cliente,p.grupo,count(r.id_cliente) "
-            consulta += "AS qtd_reviews FROM reviews as r JOIN produtos as p ON r.asin_prod = p.asin where asin_prod IN "
-            consulta += "(SELECT asin FROM produtos where grupo='Software') GROUP BY r.id_cliente, p.grupo ORDER BY qtd_reviews DESC LIMIT 10) "
-            consulta += "UNION (SELECT r.id_cliente,p.grupo,count(r.id_cliente) "
-            consulta += "AS qtd_reviews FROM reviews as r JOIN produtos as p ON r.asin_prod = p.asin where asin_prod IN "
-            consulta += "(SELECT asin FROM produtos where grupo='CE') GROUP BY r.id_cliente, p.grupo ORDER BY qtd_reviews DESC LIMIT 10) "
-            consulta += "UNION (SELECT r.id_cliente,p.grupo,count(r.id_cliente) "
-            consulta += "AS qtd_reviews FROM reviews as r JOIN produtos as p ON r.asin_prod = p.asin where asin_prod IN "
-            consulta += "(SELECT asin FROM produtos where grupo='Toy') GROUP BY r.id_cliente, p.grupo ORDER BY qtd_reviews DESC LIMIT 10)) ORDER BY grupo, qtd_reviews DESC"
-            cur.execute(consulta)
-
-            colnames = [desc[0] for desc in cur.description]
-            print(colnames)
-
-            resultado = cur.fetchall()
-            for tupla in resultado:
-                print(tupla)
-
-        except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
-
-        print("")
-        print("")
-        input("Digite qualquer coisa para continuar\n")
-        os.system('cls' if os.name == 'nt' else 'clear')
 
     if(cons == '8'):
         break

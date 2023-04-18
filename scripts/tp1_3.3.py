@@ -15,34 +15,28 @@ conn = psycopg2.connect(
 # Objeto de Cursor
 cur = conn.cursor()
 
-def welcome_func():
-    print("DASHBOARD DE CONSULTAS")
-    print("")
-    print("")
-    print("Escolha a consulta a ser feita:")
-    print("")
-    print("1 - Dado um produto, listar os 5 comentarios mais uteis e com maior avaliacao e os 5 comentarios mais uteis e com menor avaliacao.")
-    print("2 - Dado um produto, listar os produtos similares com maiores vendas do que ele.")
-    print("3 - Dado um produto, mostrar a evolução diária das médias de avaliação ao longo do intervalo de tempo coberto no arquivo de entrada.")
-    print("4 - Listar os 10 produtos líderes de venda em cada grupo de produtos.")
-    print("5 - Listar os 10 produtos com a maior média de avaliações úteis positivas por produto.")
-    print("6 - Listar a 5 categorias de produto com a maior média de avaliações úteis positivas por produto.")
-    print("7 - Listar os 10 clientes que mais fizeram comentários por grupo de produto.")
-    print("")
-    print("8 - Finalizar")
-    print("")
-    print("")
+def welcome_dashboard():
+    print("DASHBOARD DE CONSULTAS\n\n")
+    print("Escolha a consulta a ser feita:\n")
+    print("a - Dado um produto, listar os 5 comentarios mais uteis e com maior avaliacao e os 5 comentarios mais uteis e com menor avaliacao.")
+    print("b - Dado um produto, listar os produtos similares com maiores vendas do que ele.")
+    print("c - Dado um produto, mostrar a evolução diária das médias de avaliação ao longo do intervalo de tempo coberto no arquivo de entrada.")
+    print("d - Listar os 10 produtos líderes de venda em cada grupo de produtos.")
+    print("e - Listar os 10 produtos com a maior média de avaliações úteis positivas por produto.")
+    print("f - Listar a 5 categorias de produto com a maior média de avaliações úteis positivas por produto.")
+    print("g - Listar os 10 clientes que mais fizeram comentários por grupo de produto.\n")
+    print("h - Finalizar\n\n")
 
 while (True):
     os.system('cls' if os.name == 'nt' else 'clear')
 
-    welcome_func()
+    welcome_dashboard()
 
     cons = input("Escolha uma consulta: ")
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
-    if (cons == '1'):
+    if (cons == 'a'):
         asin = input("Insira o ASIN do produto: ")
         os.system('cls' if os.name == 'nt' else 'clear')
         print("")
@@ -72,7 +66,7 @@ while (True):
         os.system('cls' if os.name == 'nt' else 'clear')
 
 
-    if(cons == '2'):
+    if(cons == 'b'):
         asin = input("Insira o ASIN do produto: ")
         os.system('cls' if os.name == 'nt' else 'clear')
         print("")
@@ -102,7 +96,7 @@ while (True):
         os.system('cls' if os.name == 'nt' else 'clear')
 
 
-    if(cons == '3'):
+    if(cons == 'c'):
         asin = input("Insira o ASIN do produto: ")
         os.system('cls' if os.name == 'nt' else 'clear')
         print("")
@@ -132,7 +126,7 @@ while (True):
         os.system('cls' if os.name == 'nt' else 'clear')
 
 
-    if(cons == '4'):
+    if(cons == 'd'):
         print("")
         print("")
         print("RESULTADO DA CONSULTA:")
@@ -170,7 +164,7 @@ while (True):
         os.system('cls' if os.name == 'nt' else 'clear')
 
 
-    if(cons == '5'):
+    if(cons == 'e'):
         print("")
         print("")
         print("RESULTADO DA CONSULTA:")
@@ -202,7 +196,7 @@ while (True):
         os.system('cls' if os.name == 'nt' else 'clear')
 
 
-    if(cons == '6'):
+    if(cons == 'f'):
         print("")
         print("")
         print("RESULTADO DA CONSULTA:")
@@ -238,7 +232,7 @@ while (True):
         input("Digite qualquer coisa para continuar\n")
         os.system('cls' if os.name == 'nt' else 'clear')
 
-    if('cons == 7'):
+    if(cons == 'g'):
         print("")
         print("")
         print("RESULTADO DA CONSULTA:")
@@ -272,7 +266,7 @@ while (True):
         input("Digite qualquer coisa para continuar\n")
         os.system('cls' if os.name == 'nt' else 'clear')
 
-    if(cons == '8'):
+    if(cons == 'h'):
         break
 
     else:

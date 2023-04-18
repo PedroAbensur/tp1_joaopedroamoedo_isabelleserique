@@ -52,9 +52,8 @@ while (True):
         print("")
         try:
 
-            consulta = f"(SELECT * FROM (SELECT * FROM review WHERE asin_prod = '{asin}') AS aux ORDER BY helpful DESC, votes DESC LIMIT 5) UNION "
-            consulta += f"(SELECT * FROM (SELECT * FROM Reviews WHERE asin_prod = '{asin}') AS aux2 ORDER BY "
-            consulta += "helpful DESC, votes LIMIT 5);"
+            consulta = f"(SELECT * FROM (SELECT * FROM review WHERE review.asin_product = '{asin}') AS aux  ORDER BY helpful DESC, rating DESC LIMIT 5) UNION"
+            consulta += f"(SELECT * FROM (SELECT * FROM review WHERE review.asin_product = '{asin}') AS aux2 ORDER BY helpful ASC, rating ASC LIMIT 5)"
             cur.execute(consulta)
 
             colnames = [desc[0] for desc in cur.description]

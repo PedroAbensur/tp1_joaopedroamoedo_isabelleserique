@@ -41,7 +41,7 @@ while (True):
     cons = input("Escolha uma consulta: ")
     os.system('cls' if os.name == 'nt' else 'clear')
 
-    # FIXAR URGENTE(NÃO FUNCIONANDO)
+
     if (cons == '1'):
         asin = input("Insira o ASIN do produto: ")
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -238,6 +238,39 @@ while (True):
         input("Digite qualquer coisa para continuar\n")
         os.system('cls' if os.name == 'nt' else 'clear')
 
+    if('cons == 7'):
+        print("")
+        print("")
+        print("RESULTADO DA CONSULTA:")
+        print("")
+        print("")
+
+        try:
+
+            consulta = """
+            SELECT DISTINCT ON (p.product_group) p.product_group, r.customer_id, COUNT(*) as num_reviews
+            FROM review r
+            INNER JOIN product p ON r.asin_product = p.asin
+            GROUP BY p.product_group, r.customer_id
+            ORDER BY p.product_group, num_reviews DESC
+            LIMIT 10;
+            """
+            cur.execute(consulta)
+
+            colnames = [desc[0] for desc in cur.description]
+            print(colnames)
+
+            resultado = cur.fetchall()
+            for tupla in resultado:
+                print(tupla)
+
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+
+        print("")
+        print("")
+        input("Digite qualquer coisa para continuar\n")
+        os.system('cls' if os.name == 'nt' else 'clear')
 
     if(cons == '8'):
         break

@@ -114,7 +114,7 @@ while (True):
 
         try:
 
-            consulta = f"SELECT review_date, AVG(rating) as avg FROM (SELECT * FROM review WHERE review.asin_prod = '{asin}') as aux GROUP BY review.review_date ORDER BY review ASC"
+            consulta = f"SELECT review_date, AVG(rating) FROM (SELECT * FROM review WHERE review.asin_product = '{asin}') as aux GROUP BY review_date ORDER BY review_date ASC"
             cur.execute(consulta)
 
             colnames = [desc[0] for desc in cur.description]
